@@ -2,34 +2,46 @@
   <section class="container">
     <div>
       <app-logo/>
-      <h1 class="title">
-        nuxt_firebase_sample
-      </h1>
-      <h2 class="subtitle">
-        Nuxt.js x Firebase sample application
-      </h2>
+      <h1 class="title">nuxt_firebase_sample</h1>
+      <h2 class="subtitle">Nuxt.js x Firebase sample application</h2>
       <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          class="button--green">Documentation</a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          class="button--grey">GitHub</a>
+        <Home v-if="!isLogin"></Home>
+        <Mypage v-if="isLogin" :user="userData"></Mypage>
       </div>
     </div>
   </section>
 </template>
 
 <script>
-import AppLogo from '~/components/AppLogo.vue'
+import AppLogo from "~/components/AppLogo.vue";
+import Home from "~/components/Home.vue";
+import Mypage from "~/components/Mypage.vue";
+
+import firebase from "@/plugins/firebase";
 
 export default {
   components: {
-    AppLogo
+    AppLogo,
+    Home,
+    Mypage
+  },
+  asyncData(context) {
+    return { name: "Hello, World！！", isLogin: false, userData: null };
+  },
+  fetch() {},
+  mounted: function() {
+    firebase.auth().onAuthStateChanged(user => {
+      console.log(user);
+      if (user) {
+        this.isLogin = true;
+        this.userData = user;
+      } else {
+        this.isLogin = false;
+        this.userData = null;
+      }
+    });
   }
-}
+};
 </script>
 
 <style>
@@ -42,7 +54,8 @@ export default {
 }
 
 .title {
-  font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* 1 */
+  font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* 1 */
   display: block;
   font-weight: 300;
   font-size: 100px;
